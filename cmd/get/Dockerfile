@@ -1,23 +1,21 @@
-FROM rust:latest as builder
+FROM rust:buster as builder
 
-WORKDIR /app
+WORKDIR /build
 
-# Copy the manifests
+RUN rustup target add x86_64-unknown-linux-musl
+RUN apt update -y
+RUN apt install musl-tools -y
+
 COPY ./Cargo.lock ./Cargo.lock
 COPY ./Cargo.toml ./Cargo.toml
-
-# Cache the dependencies - this layer is rebuilt only when Cargo.toml or Cargo.lock changes
-RUN cargo build --release
-
-# Copy the source and build the application
 COPY ./src ./src
-RUN cargo build --release
 
-# Stage 2: Create the final image
+RUN cargo build --target x86_64-unknown-linux-musl --release
+
+
 FROM scratch
 
-# Copy the binary from the builder stage
-COPY --from=builder /stock-get/target/release/stock-get /usr/local/bin/stock
+COPY --from=builder /etc/ssl/certs /etc/ssl/certs
+COPY --from=builder /build/target/x86_64-unknown-linux-musl/release/stock /stock
 
-# Set the default command to run the binary
-CMD ["stock"]
+ENTRYPOINT ["/stock"]

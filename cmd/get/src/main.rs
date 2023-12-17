@@ -12,33 +12,35 @@ const INITIAL_RETRY_DELAY: u64 = 2; // seconds
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
-    /// Ticker symbol for the stock
+    // Ticker symbol
     #[arg(long)]
     ticker: String,
 
-    /// Multiplier for the range
+    // Multiplier of timespan for candle
     #[arg(long, default_value_t = 1)]
     multiplier: u64,
 
-    /// Timespan for the range
+    // Timespan for candle
     #[arg(long, default_value = "minute")]
     timespan: String,
 
+    // From date
     #[arg(long)]
     from: Option<String>,
     
+    // To date
     #[arg(long)]
     to: Option<String>,
 
-    /// Adjusted data flag
+    // Adjusted price based on splits
     #[arg(long)]
     adjusted: Option<String>,
 
-    /// Sorting order
+    // Sort
     #[arg(long)]
     sort: Option<String>,
 
-    /// Limit for data retrieval
+    // Limit for number of records
     #[arg(long, default_value = "50000")]
     limit: String,
 }
